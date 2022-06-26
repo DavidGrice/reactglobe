@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react';
+import { Globe, GlobeWithPolygons } from './components';
+import styles from './App.module.css';
+import { fetchPointData, fetchPolygonData, fetchAllData } from './assets/api';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+    state = {
+      pointData: {},
+      polygonData: {}
+  }
+
+  componentDidMount() {
+      const fetchedPointData = fetchPointData();
+      const fetchedPolygonData = fetchPolygonData();
+      this.setState({ 
+        pointData: fetchedPointData,
+        polygonData: fetchedPolygonData
+      });
+  }
+
+  render() {
+    const { pointData, polygonData } = this.state;
+    return (
+      <div className={styles.container}>
+        {/* <GlobeWithPolygons
+        polygonData={polygonData}
+        /> */}
+        <Globe 
+        pointData={pointData}
+        polygonData={polygonData}
+        />
+      </div>
+    );
+  }
 }
 
 export default App;
