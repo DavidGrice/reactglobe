@@ -13,7 +13,7 @@ export const fetchPointData = () => {
 
 export const fetchPolygonData = () => {
     try {
-        const response = embassyData;
+        const response = polygonData;
         //console.log(response)
         return response;
     } catch (error) {

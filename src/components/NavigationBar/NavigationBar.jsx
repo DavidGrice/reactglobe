@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from '@emotion/styled';
-import styles from './ButtonBox.module.css';
+import styles from './NavigationBar.module.css';
 
 const Button = styled.button `
     background-color: purple;
@@ -17,35 +17,34 @@ const Button = styled.button `
     }
 `;
 
-class ButtonBox extends Component {
+class NavigationBar extends Component {
     constructor(props) {
         super(props)
-        this.handlePointClick = this.handlePointClick.bind(this);
-        this.handleNameClick = this.handleNameClick.bind(this);
+        this.changeToGlobe = this.changeToGlobe.bind(this);
     }
 
-    handlePointClick = (event) => {
+    changeToGlobe = (event, type) => {
         event.preventDefault();
-        this.props.addEmbassyPoints(event);
-    }
-
-    handleNameClick = (event) => {
-        event.preventDefault();
-        this.props.addEmbassyPointsNames(event);
+        if (type === "Point") {
+            this.props.functionOne(event, type);
+        }
+        else if (type === "Polygon") {
+            this.props.functionTwo(event,type);
+        }
     }
 
     render() {
-        const button = this.props.titleActive
-        const pointsActive = this.props.pointsActive
-        const nameActive = this.props.nameActive
         return (
             <>
                 <div className={styles.buttonBox}>
+                    <div className={styles.title}>
+                        <h3>Navigation</h3>
+                    </div>
                     { this.props.textOne ? 
                         <>
                             <Button 
                             variant="contained"
-                            onClick={(event) => this.handlePointClick(event)}
+                            onClick={(event) => this.changeToGlobe(event, "Point")}
                             >
                                 {this.props.textOne}
                             </Button> 
@@ -56,7 +55,7 @@ class ButtonBox extends Component {
                             <div className={styles.break} /> 
                             <Button 
                             variant="contained"
-                            onClick={(event) => this.handleNameClick(event)}
+                            onClick={(event) => this.changeToGlobe(event, "Polygon")}
                             >
                                 {this.props.textTwo}
                             </Button> 
@@ -68,4 +67,4 @@ class ButtonBox extends Component {
     }
 }
 
-export default ButtonBox;
+export default NavigationBar;

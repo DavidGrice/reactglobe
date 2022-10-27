@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import { Globe, GlobeWithPolygons } from './components';
+import { Globe, GlobeWithPolygons, NavigationBar } from './components';
 import styles from './App.module.css';
 import { fetchPointData, fetchPolygonData, fetchAllData } from './assets/api';
 
 class App extends Component {
     state = {
       pointData: {},
-      polygonData: {}
+      polygonData: {},
+      polygonActive: false,
+      pointActive: true,
   }
 
   componentDidMount() {
@@ -18,17 +20,37 @@ class App extends Component {
       });
   }
 
+  changeToGlobe = (event, type) => {
+    if (type==="Point") {
+      console.log("Point")
+      this.setState({pointActive: true, polygonActive: false})
+    } else if (type==="Polygon") {
+      console.log("Polygon")
+      this.setState({polygonActive: true, pointActive: false})
+    }
+  }
+
   render() {
-    const { pointData, polygonData } = this.state;
+    const { pointData, polygonData, polygonActive, pointActive} = this.state;
     return (
       <div className={styles.container}>
-        {/* <GlobeWithPolygons
-        polygonData={polygonData}
-        /> */}
-        <Globe 
-        pointData={pointData}
-        polygonData={polygonData}
+        <NavigationBar 
+        textOne={"PointGlobe"}
+        textTwo={"PolygonGlobe"}
+        functionOne={(event) => this.changeToGlobe(event, "Point")}
+        functionTwo={(event) => this.changeToGlobe(event, "Polygon")}
         />
+        {pointActive ? 
+          <Globe 
+            pointData={pointData}
+            polygonData={polygonData}
+          /> : 
+          <GlobeWithPolygons
+          polygonData={polygonData}
+          />
+        }
+        
+        {/*  */}
       </div>
     );
   }

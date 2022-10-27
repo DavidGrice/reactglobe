@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
-import { Title, ButtonBox, CountryNameBox, CountryModal} from '../index.js';
+import { Title, ButtonBox, CountryNameBox, CountryModal } from '../index.js';
 import styles from './Globe.module.css';
 
 import earthmap from '../../assets/images/earthmap4k.jpg';
@@ -24,6 +24,7 @@ class Globe extends Component {
         this.state = {
             titleActive: true,
             nameActive: false,
+            labelsAdded: false,
             pointsActive: false,
             pointHovered: false,
             pointHoveredName: '',
@@ -34,6 +35,7 @@ class Globe extends Component {
         this.addEmbassyPointsNames = this.addEmbassyPointsNames.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.removeChildren = this.removeChildren.bind(this);
+        this.removeNames = this.removeNames.bind(this);
     }
     
 
@@ -41,6 +43,22 @@ class Globe extends Component {
         this.createScene();
         this.startAnimation();
         window.addEventListener('resize', this.handleWindowResize);
+    }
+
+    componentDidUpdate() {
+        if (this.state.pointsActive) {
+            try {
+                this.removeNames();
+            } catch (error) {
+                console.log("No names active")
+            }
+        } else if (this.state.nameActive) {
+            // this.earthDivGroup = document.createElement( 'div' );
+            // this.earthDivGroup.id = 'divNameGroup';
+            // this.earthDivGroup.className = 'divNameGroup';
+            // this.labelRenderer.appendChild(this.earthDivGroup.domElement);
+            this.labelRenderer.domElement.hidden = false;
+        }
     }
 
     componentWillUnmount() {
@@ -62,8 +80,10 @@ class Globe extends Component {
         this.labelRenderer.setSize( window.innerWidth, window.innerHeight );
         this.labelRenderer.domElement.style.position = 'absolute';
         this.labelRenderer.domElement.style.top = '0px';
+        this.labelRenderer.domElement.className = 'labelRenderer';
+        this.labelRenderer.domElement.id = 'labelRenderer';
+        this.labelRenderer.domElement.hidden = false;
         this.mount.appendChild( this.labelRenderer.domElement );
-
         this.mount.appendChild( this.renderer.domElement );
         this.camera.position.z = 20;
         this.addLight();
@@ -143,69 +163,74 @@ class Globe extends Component {
                         this.vals[i].Unnamed_17);
                 }
             }
-        } else if (type === 'EmbassyWithNames') {
-            for(let i = 0; i < this.vals.length; i++){
-                if(this.vals[i].Bureau==='EUR'){
-                    this.addParticlesWithNames(
-                        'red', this.vals[i].Latitude, this.vals[i].Longitude, 
-                        this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
-                        this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
-                        this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
-                        this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
-                        this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
-                        this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
-                        this.vals[i].Unnamed_17);
-                } else if(this.vals[i].Bureau==='NEA') {
-                    this.addParticlesWithNames(
-                        'yellow', this.vals[i].Latitude, this.vals[i].Longitude, 
-                        this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
-                        this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
-                        this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
-                        this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
-                        this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
-                        this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
-                        this.vals[i].Unnamed_17);
-                } else if(this.vals[i].Bureau==='SCA') {
-                    this.addParticlesWithNames(
-                        'orange', this.vals[i].Latitude, this.vals[i].Longitude, 
-                        this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
-                        this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
-                        this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
-                        this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
-                        this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
-                        this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
-                        this.vals[i].Unnamed_17);
-                } else if(this.vals[i].Bureau==='EAP') {
-                    this.addParticlesWithNames(
-                        'purple', this.vals[i].Latitude, this.vals[i].Longitude, 
-                        this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
-                        this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
-                        this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
-                        this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
-                        this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
-                        this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
-                        this.vals[i].Unnamed_17);
-                } else if(this.vals[i].Bureau==='AF') {
-                    this.addParticlesWithNames(
-                        'brown', this.vals[i].Latitude, this.vals[i].Longitude, 
-                        this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
-                        this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
-                        this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
-                        this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
-                        this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
-                        this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
-                        this.vals[i].Unnamed_17);
-                } else if (this.vals[i].Bureau==='WHA') {
-                    this.addParticlesWithNames(
-                        'blue', this.vals[i].Latitude, this.vals[i].Longitude, 
-                        this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
-                        this.vals[i].Country, this.vals[i].Property_Name,
-                        this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
-                        this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
-                        this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
-                        this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
-                        this.vals[i].Unnamed_17);
+        } else if (type === 'EmbassyWithNames')  {
+            if (this.state.labelsAdded === false) {
+                for (let i = 0; i < this.vals.length; i++){
+                    if (this.vals[i].Bureau==='EUR'){
+                        this.addParticlesWithNames(
+                            'red', this.vals[i].Latitude, this.vals[i].Longitude, 
+                            this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
+                            this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
+                            this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
+                            this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
+                            this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
+                            this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
+                            this.vals[i].Unnamed_17);
+                    } else if (this.vals[i].Bureau==='NEA') {
+                        this.addParticlesWithNames(
+                            'yellow', this.vals[i].Latitude, this.vals[i].Longitude, 
+                            this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
+                            this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
+                            this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
+                            this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
+                            this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
+                            this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
+                            this.vals[i].Unnamed_17);
+                    } else if (this.vals[i].Bureau==='SCA') {
+                        this.addParticlesWithNames(
+                            'orange', this.vals[i].Latitude, this.vals[i].Longitude, 
+                            this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
+                            this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
+                            this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
+                            this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
+                            this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
+                            this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
+                            this.vals[i].Unnamed_17);
+                    } else if (this.vals[i].Bureau==='EAP') {
+                        this.addParticlesWithNames(
+                            'purple', this.vals[i].Latitude, this.vals[i].Longitude, 
+                            this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
+                            this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
+                            this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
+                            this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
+                            this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
+                            this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
+                            this.vals[i].Unnamed_17);
+                    } else if (this.vals[i].Bureau==='AF') {
+                        this.addParticlesWithNames(
+                            'brown', this.vals[i].Latitude, this.vals[i].Longitude, 
+                            this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
+                            this.vals[i].Country, this.vals[i].Post, this.vals[i].Property_Name,
+                            this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
+                            this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
+                            this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
+                            this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
+                            this.vals[i].Unnamed_17);
+                    } else if (this.vals[i].Bureau==='WHA') {
+                        this.addParticlesWithNames(
+                            'blue', this.vals[i].Latitude, this.vals[i].Longitude, 
+                            this.vals[i].Post, this.vals[i].Status, this.vals[i].Bureau,
+                            this.vals[i].Country, this.vals[i].Property_Name,
+                            this.vals[i].Property_Use, this.vals[i].Ownership_Type, this.vals[i].Property_ID,
+                            this.vals[i].Real_Property_Unique_ID, this.vals[i].Street_Address_1,
+                            this.vals[i].Street_Address_2, this.vals[i].Street_Address_3,
+                            this.vals[i].City, this.vals[i].Date_First_Acq, this.vals[i].Funding_Agency,
+                            this.vals[i].Unnamed_17);
+                    }
                 }
+            } else if (this.state.labelsAdded === true) {
+                let label = document.getElementById("labelRenderer");
+                label.hidden = false;
             }
         }
     };
@@ -356,14 +381,15 @@ class Globe extends Component {
         this.earthLabel = new CSS2DObject( this.earthDiv );
         this.earthLabel.position.set( temp[0], temp[1], temp[2]);
 
-        this.particleSystem = new THREE.Points(
-            this.particleMesh,
-            this.particleMeshMat
-        );
-        this.particleSystem.add( this.earthLabel );
+        // this.particleSystem = new THREE.Points(
+        //     this.particleMesh,
+        //     this.particleMeshMat
+        // );
+        // this.particleSystem.add( this.earthLabel );
         
-        this.particleSystem.name = name;
-        this.earthSphere.add(this.particleSystem);
+        // this.particleSystem.name = name;
+        // this.earthSphere.add(this.particleSystem);
+        this.earthSphere.add(this.earthLabel);
     };
 
     addEmbassyPoints = (event) => {
@@ -373,10 +399,10 @@ class Globe extends Component {
             pointsActive: true,
             nameActive: false
         })
-        let labels = document.getElementsByClassName("labels");
-        for (let i = 0; i < labels.length; i++) {
-            labels[i].remove();
-        }
+        // let labels = document.getElementsByClassName("labels");
+        // for (let i = 0; i < labels.length; i++) {
+        //     labels[i].remove();
+        // }
         this.removeChildren();
         this.addSceneObjects("EmbassyNoNames")
     };
@@ -423,6 +449,11 @@ class Globe extends Component {
         while (destroy--) {
             this.earthSphere.remove(this.earthSphere.children[destroy]);
         }
+    }
+
+    removeNames = () => {
+        let labels = document.getElementById("labelRenderer");
+        labels.hidden = true;
     }
 
     startAnimation = () => {
@@ -490,6 +521,8 @@ class Globe extends Component {
         const pointHoveredName = this.state.pointHoveredName;
         const countryModalActive = this.state.countryModalActive;
         const countryData = this.state.countryData;
+        const titleName = "POINT GLOBE";
+        const authorName = "DAVID GRICE"
         return (
             <>
                 <div
@@ -499,7 +532,7 @@ class Globe extends Component {
                 onClick = {this.onMouseClick}
                 >
                 </div>
-                {titleActive ? <Title /> : <></>}
+                {titleActive ? <Title titleName={titleName} authorName={authorName}/> : <></>}
                 {pointsActive ? 
                     ( pointHovered ? <CountryNameBox name={pointHoveredName} /> : <></>
                     ) : <></>
